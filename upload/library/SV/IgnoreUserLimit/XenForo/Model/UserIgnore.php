@@ -14,7 +14,7 @@ class SV_IgnoreUserLimit_XenForo_Model_UserIgnore extends XFCP_SV_IgnoreUserLimi
     public function ignoreUsers($userId, $ignoredUserIds)
     {
         $ignoreLimit = -1;
-        $visitor = XenForo_Visitor::getInstance()->toArray();
+        $visitor = XenForo_Visitor::getInstance();
         if ($userId == $visitor->getUserId())
         {
             $ignoreLimit = $visitor->hasPermission('general', 'sv_userIgnoreLimit');
