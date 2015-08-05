@@ -26,4 +26,13 @@ class SV_IgnoreUserLimit_Listener
     {
         $extend[] = self::AddonNameSpace.'_'.$class;
     }
+
+    public static function visitor_setup(XenForo_Visitor &$visitor)
+    {
+        if ($visitor->hasPermission('general', 'sv_userIgnoreDisabled'))
+        {
+            $visitor['ignored'] = '';
+            $visitor['ignoredUsers'] = array();
+        }
+    }
 }
