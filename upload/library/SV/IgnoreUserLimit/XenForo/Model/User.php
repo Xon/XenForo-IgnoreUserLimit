@@ -4,10 +4,22 @@ class SV_IgnoreUserLimit_XenForo_Model_User extends XFCP_SV_IgnoreUserLimit_XenF
 {
     public function isUserIgnored(array $user, $ignoredUser)
     {
-        if (XenForo_Permission::hasPermission($user['permissions'], 'general', 'sv_userIgnoreDisabled'))
+        if (isset($user['permissions']))
         {
-            return false;
+            if (XenForo_Permission::hasPermission($user['permissions'], 'general', 'sv_userIgnoreDisabled'))
+            {
+                return false;
+            }
         }
+        else 
+        {
+            $visitor = XenForo_Visitor::getInstance();
+            if ($user['user_id'] == $visitor['user_id'] && $visitor->hasPermission('general', 'sv_userIgnoreDisabled'))
+            {
+                return false;
+            }
+        }
+
         return parent::isUserIgnored($user, $ignoredUser);
     }
 }
