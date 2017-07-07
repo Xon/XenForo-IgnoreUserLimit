@@ -2,8 +2,6 @@
 
 class SV_IgnoreUserLimit_Listener
 {
-    const AddonNameSpace = 'SV_IgnoreUserLimit';
-
     public static function install($installedAddon, array $addonData, SimpleXMLElement $xml)
     {
         $version = isset($installedAddon['version_id']) ? $installedAddon['version_id'] : 0;
@@ -24,7 +22,7 @@ class SV_IgnoreUserLimit_Listener
 
     public static function load_class($class, &$extend)
     {
-        $extend[] = self::AddonNameSpace.'_'.$class;
+        $extend[] = 'SV_IgnoreUserLimit_'.$class;
     }
 
     public static function visitor_setup(XenForo_Visitor &$visitor)
