@@ -61,3 +61,9 @@ class SV_IgnoreUserLimit_XenForo_Model_UserIgnore extends XFCP_SV_IgnoreUserLimi
         }
     }
 }
+
+// ******************** FOR IDE AUTO COMPLETE ********************
+if (false)
+{
+    class XFCP_SV_IgnoreUserLimit_XenForo_Model_UserIgnore extends XenForo_Model_UserIgnore {}
+}

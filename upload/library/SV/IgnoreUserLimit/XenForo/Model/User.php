@@ -23,3 +23,9 @@ class SV_IgnoreUserLimit_XenForo_Model_User extends XFCP_SV_IgnoreUserLimit_XenF
         return parent::isUserIgnored($user, $ignoredUser);
     }
 }
+
+// ******************** FOR IDE AUTO COMPLETE ********************
+if (false)
+{
+    class XFCP_SV_IgnoreUserLimit_XenForo_Model_User extends XenForo_Model_User {}
+}
