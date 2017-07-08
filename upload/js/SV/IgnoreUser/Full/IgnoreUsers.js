@@ -327,8 +327,11 @@ function supportsLocalStorageAndCustomProperties() {
 function storageAvailable(type) {
     try {
         let storage = window[type], x = '__storage_test__';
-        storage.setItem(x, x);
-        storage.removeItem(x);
+        let users = storage.getItem("ignoredUsers");
+        if (!users) {
+            storage.setItem(x, x);
+            storage.removeItem(x);
+        }
         return true;
     }
     catch(e) {
