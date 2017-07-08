@@ -38,6 +38,10 @@
         margin: 0;
     }
 
+    .hidden.button {
+        display: none;
+    }
+
     /* Hide ignored users */
     #messageList > li {
         display: var(--ignored-post-display, list-item);
