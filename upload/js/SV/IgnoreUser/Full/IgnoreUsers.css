@@ -1,0 +1,67 @@
+﻿/* 
+ * Implementation
+ *
+ * This defines the CSS to use for hiding ignored users and threads,
+ * and showing notifications for each.
+ *
+ */
+
+@supports (--css: custom properties) {
+    /* Notification messages */
+    .primaryContent::before,
+    .attribution::after,
+    .discussionListItem .main::before {
+        font-size: 11px;
+        line-height: 16px;
+        color: var(--theme-color);
+        background: var(--theme-background-color) url(var(--theme-gradient-svg)) repeat-x;
+        padding: 5px 5px 5px 10px;
+        border: 1px solid red;
+        border-radius: 5px;
+    }
+
+    .primaryContent::before {
+        content: var(--ignored-user-post-message);
+        display: var(--ignored-user-post-message-display, none);
+        margin: -8px -5px 10px -6px;
+    }
+
+    .attribution::after {
+        content: var(--ignored-user-quote-message);
+        display: var(--ignored-user-quote-message-display, none);
+        margin: 0;
+    }
+
+    .discussionListItem .main::before {
+        content: var(--ignored-thread-message);
+        display: var(--ignored-thread-message-display, none);
+        margin: 0;
+    }
+
+    /* Hide ignored users */
+    #messageList > li {
+        display: var(--ignored-post-display, list-item);
+    }
+
+    .quoteContainer {
+        display: var(--ignored-quote-display, block);
+    }
+    
+    .discussionListItem {
+        display: var(--ignored-thread-display, table);
+    }
+
+    /* Reveal ignored users */
+    #messageList.showIgnored > li {
+        --ignored-post-display: unset;
+    }
+
+    #messageList.showIgnored .bbCodeQuote {
+        --ignored-quote-display: unset;
+    }
+
+    ol.discussionListItems.showIgnored > .discussionListItem {
+        --ignored-thread-display: unset;
+    }
+}
+

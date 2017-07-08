@@ -1,0 +1,13 @@
+﻿/* 
+ * Themeing properties.
+ * These are general and theme-specific custom properties that should be set.
+ */
+
+@supports (--css: custom properties) {
+     :root {
+        --theme-color: rgb(253, 254, 255);
+        --theme-background-color: rgb(28, 42, 57);
+        
+        --theme-gradient-svg: 'https://forums.sufficientvelocity.com/data/svg/20/0/1499234397/gradient_widget_muted.svg';
+    }
+}
