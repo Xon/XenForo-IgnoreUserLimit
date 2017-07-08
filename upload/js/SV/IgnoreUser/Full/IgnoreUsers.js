@@ -316,10 +316,10 @@ function GetThisThreadId() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function supportsLocalStorageAndCustomProperties() {
-    if (!storageAvailable('localStorage'))
-        return false;
+    let supportsLocalStorage = storageAvailable('localStorage');
+    let supportsCustomProperties = window.CSS && CSS.supports('color', 'var(--primary)');
     
-    return (window.CSS && CSS.supports('color', 'var(--primary)'));
+    return supportsLocalStorage && supportsCustomProperties;
 }
 
 /* Function to test whether local storage is available to use.
