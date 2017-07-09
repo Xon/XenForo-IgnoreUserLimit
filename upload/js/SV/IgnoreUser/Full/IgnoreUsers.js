@@ -57,9 +57,9 @@ function UpdateIgnores(){
 
     let expirationOffset = 21600000; // 6 hours
     let newExpiration = String(Date.now() + expirationOffset);
-    
+
     let expiration = localStorage.getItem("ignoredExpiration");
-    
+
     if (!expiration || Date.now() > expiration) {
         localStorage.setItem("ignoredExpiration", newExpiration);
         let delay = Math.random() * 1500 + 200;
@@ -86,7 +86,7 @@ function RequestUpdatedIgnores() {
             UpdateLocalStorage(ignored);
         }
     };
-    
+
     xmlhttp.open("GET", url, true);
     xmlhttp.send();
 
@@ -108,11 +108,11 @@ function CreateCSS() {
     RemoveCSS(userIgnoreCSS);
     userIgnoreCSS = CreateUserIgnoreCSS();
     ApplyCSS(userIgnoreCSS);
-    
+
     RemoveCSS(threadIgnoreCSS);
     threadIgnoreCSS = CreateThreadIgnoreCSS();
     ApplyCSS(threadIgnoreCSS);
-    
+
     MakeButtons(false);
 }
 
@@ -120,13 +120,13 @@ function ApplyCSS(css) {
     let element = document.createElement("style");
     element.type = "text/css";
     element.innerHTML = css;
-    document.head.appendChild(element);    
+    document.head.appendChild(element);
 }
 
 function RemoveCSS(css) {
     if (css) {
         let styleTags = document.head.getElementsByTagName("style");
-        
+
         for (let i = 0; i < styleTags.length; i++) {
             if (styleTags[i].innerHTML == css) {
                 document.head.removeChild(styleTags[i]);
@@ -139,21 +139,21 @@ function RemoveCSS(css) {
 function CreateUserIgnoreCSS() {
     let users = GetIgnoredUsers();
     let cssText = "";
-    
+
     // Create CSS for ignored user names.
     if (users.length > 0)
     {
         let postBlock = "";
         let quoteBlock = "";
         let nextLine = "";
-        
+
         /* Build up the name selectors for posts and quotes */
         for (let user of users) {
             postBlock += `${nextLine}    li[data-author="${user}"]:not(.staff)`;
             quoteBlock += `${nextLine}    .bbCodeQuote[data-author="${user}"]`;
             nextLine = ",\n";
         }
-        
+
         /* Define the rules for each */
         postBlock += ` {
         --ignored-post-display: none;
@@ -165,15 +165,15 @@ function CreateUserIgnoreCSS() {
         --ignored-user-quote-message: "You are ignoring this user.";
         --ignored-user-quote-message-display: block;
     }`;
-    
-    
+
+
         /* Put everything inside a check for custom property support */
         cssText = `@supports (--css: variables) {
 ${postBlock}
 ${quoteBlock}
-}`;    
+}`;
     }
-    
+
     return cssText;
 }
 
@@ -186,22 +186,22 @@ function CreateThreadIgnoreCSS() {
     {
         // Open support block
         cssText = `@supports (--css: variables) {\n`;
-        
+
         let nextLine = "";
-        
+
         /* Build up the name selectors for posts and quotes */
         for (let thread of threads) {
             cssText += `${nextLine}    li[id="${thread}"]`;
             nextLine = ",\n";
         }
-        
+
         /* Define the rules for each */
         cssText += ` {
         --ignored-thread-display: none;
         --ignored-thread-message: "You are ignoring this thread.";
         --ignored-thread-message-display: block;
     }\n`;
-        
+
         // Close support block
         cssText += "}";
     }
@@ -258,7 +258,7 @@ function MakeButtons(onLoad) {
             return;
         }
     }
-    
+
     MakeShowIgnoredButtons();
     MakeHideThreadButtons();
 }
@@ -269,7 +269,7 @@ function MakeShowIgnoredButtons() {
     let showContentFn;
     let whatToShow;
     let visible;
-    
+
     if (IsThreadView()) {
         showContentFn = function() {
             ToggleIgnoredEntries(document.getElementById('messageList'));
@@ -285,19 +285,19 @@ function MakeShowIgnoredButtons() {
     } else {
         return;
     }
-    
+
     let buttonClass = visible ? "button" : "hidden button";
-    
+
     let showingButtons = GetIgnoreButtons("showing");
-    
+
     if (showingButtons.length > 0) {
         for (let i = 0; i < showingButtons.length; i++) {
             showingButtons[i].className = buttonClass;
         }
-        
+
         return;
     }
-    
+
     let navGroups = document.getElementsByClassName('pageNavLinkGroup');
 
     for (let nav of navGroups) {
@@ -317,12 +317,12 @@ function MakeHideThreadButtons() {
 
     let isIgnored = IsThreadIgnored();
     let ignoringButtons = GetIgnoreButtons("ignoring");
-    
+
     if (ignoringButtons.length > 0) {
         for (let i = 0; i < ignoringButtons.length; i++) {
             ignoringButtons[i].innerHTML = IgnoreThreadButtonText(isIgnored);
         }
-        
+
         return;
     }
 
@@ -352,7 +352,7 @@ function GetIgnoreButtons(dataVal) {
             }
         }
     }
-    
+
     return buttons;
 }
 
@@ -385,7 +385,7 @@ function IsThreadIgnored() {
     let id = GetThisThreadId();
     let threads = GetIgnoredThreadNumbers();
     let index = threads.indexOf(id);
-    
+
     return (index >= 0);
 }
 
@@ -408,7 +408,7 @@ function PageHasIgnoredPosts() {
             }
         }
     }
-    
+
     return false;
 }
 
@@ -421,7 +421,7 @@ function PageHasIgnoredThreads() {
             return true;
         }
     }
-    
+
     return false;
 }
 
@@ -431,7 +431,7 @@ function ToggleThreadIgnore() {
     let id = GetThisThreadId();
     if (id) {
         let threads = GetIgnoredThreadNumbers();
-        
+
         let index = threads.indexOf(id);
         let threadIsIgnored = index >= 0;
 
@@ -441,7 +441,7 @@ function ToggleThreadIgnore() {
         } else {
             threads.push(id);
         }
-        
+
         localStorage.setItem("ignoredThreads", String(threads));
         UpdateToggleButtons(!threadIsIgnored);
     }
@@ -460,7 +460,7 @@ function IgnoreThreadButtonText(threadIsIgnored) {
 
 function UpdateToggleButtons(threadIsIgnored) {
     let text = IgnoreThreadButtonText(threadIsIgnored);
-    
+
     let ignoringButtons = GetIgnoreButtons("ignoring");
 
     for (let btn of ignoringButtons) {
@@ -476,7 +476,7 @@ function GetThisThreadId() {
     let idRegex = /\/threads\/[^\/]+\.(\d+)\//;
 
     let docLinks = document.head.getElementsByTagName("link");
-    
+
     for (let i = 0; i < docLinks.length; i++) {
         if (docLinks[i].rel == "canonical") {
             let href = docLinks[i].href;
@@ -496,7 +496,7 @@ function GetThisThreadId() {
 function supportsLocalStorageAndCustomProperties() {
     let supportsLocalStorage = storageAvailable('localStorage');
     let supportsCustomProperties = window.CSS && CSS.supports('color', 'var(--primary)');
-    
+
     return supportsLocalStorage && supportsCustomProperties;
 }
 
