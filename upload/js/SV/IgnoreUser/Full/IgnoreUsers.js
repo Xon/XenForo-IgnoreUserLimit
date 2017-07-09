@@ -229,7 +229,7 @@ function GetIgnoredThreadNumbers() {
 
 function GetIgnoredThreadIds() {
     let threads = GetIgnoredThreadNumbers();
-    for (i = 0; i < threads.length; i++) {
+    for (let i = 0; i < threads.length; i++) {
         threads[i] = `thread-${threads[i]}`;
     }
     return threads;
