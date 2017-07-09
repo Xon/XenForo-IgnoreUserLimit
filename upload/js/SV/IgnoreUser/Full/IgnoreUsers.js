@@ -271,11 +271,15 @@ function MakeShowIgnoredButtons() {
     let visible;
     
     if (IsThreadView()) {
-        showContentFn = function() { $('#messageList').addClass('showIgnored'); };
+        showContentFn = function() {
+            ToggleIgnoredEntries(document.getElementById('messageList'));
+        };
         whatToShow = "Users";
         visible = PageHasIgnoredPosts();
     } else if (IsForumView()) {
-        showContentFn = function() { $('.discussionListItems').addClass('showIgnored'); };
+        showContentFn = function() {
+            ToggleIgnoredEntries(document.getElementsByClassName('discussionListItems')[0]);
+        };
         whatToShow = "Threads";
         visible = PageHasIgnoredThreads();
     } else {
@@ -350,6 +354,19 @@ function GetIgnoreButtons(dataVal) {
     }
     
     return buttons;
+}
+
+function ToggleIgnoredEntries(parentElement) {
+    if (parentElement) {
+        parentElement.classList.toggle('showIgnored');
+
+        let buttons = GetIgnoreButtons("showing");
+
+        for (let i = 0; i < buttons.length; i++) {
+            let cmd = buttons[i].innerHTML.slice(0,4) === 'Show' ? 'Hide' : 'Show';
+            buttons[i].innerHTML = `${cmd}${buttons[i].innerHTML.slice(4)}`;
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
