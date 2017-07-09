@@ -35,7 +35,7 @@ SOFTWARE.
     UpdateIgnores();
 
     document.addEventListener('DOMContentLoaded', MakeButtonsOnLoad, false);
-}) ();
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -529,3 +529,4 @@ function storageAvailable(type) {
     }
 }
 
+}) ();
