@@ -398,7 +398,7 @@ function PageHasIgnoredPosts() {
 function PageHasIgnoredThreads() {
     let threads = document.getElementsByClassName('discussionListItem')
 
-    for (let t = 0; t < threads.length; t++) {
+    for (let i = 0; i < threads.length; i++) {
         let val = getComputedStyle(threads[i]).getPropertyValue('--ignored-thread-display');
         if (val !== null && val != "") {
             return true;
