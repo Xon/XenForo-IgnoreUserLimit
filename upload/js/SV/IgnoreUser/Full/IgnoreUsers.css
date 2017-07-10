@@ -14,7 +14,7 @@
         font-size: 11px;
         line-height: 16px;
         color: var(--theme-color);
-        background: var(--theme-background-color) url(var(--theme-gradient-svg)) repeat-x;
+        background: var(--theme-background-color) url('https://forums.sufficientvelocity.com/data/svg/20/0/1499234397/gradient_widget_muted.svg') repeat-x;
         padding: 5px 5px 5px 10px;
         border: 1px solid red;
         border-radius: 5px;
@@ -36,6 +36,10 @@
         content: var(--ignored-thread-message);
         display: var(--ignored-thread-message-display, none);
         margin: 0;
+    }
+
+    .hidden.button {
+        display: none;
     }
 
     /* Hide ignored users */
