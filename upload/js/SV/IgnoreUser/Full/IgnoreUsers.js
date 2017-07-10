@@ -24,7 +24,14 @@ SOFTWARE.
 
 */
 
-(function () {
+/**
+ * Create the SV namespace, if it does not already exist.
+ */
+var SV = SV || {};
+
+/** @param {jQuery} $ jQuery Object */
+!function($, window, document, _undefined)
+{
   'use strict';
 
     if (!supportsLocalStorageAndCustomProperties())
@@ -77,18 +84,14 @@ function UpdateIgnores(){
 function RequestUpdatedIgnores() {
     console.log("RequestUpdatedIgnores");
 
-    let xmlhttp = new XMLHttpRequest();
     var url = "https://forums.sufficientvelocity.com/account/ignored.json";
-
-    xmlhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            let ignored = JSON.parse(this.responseText);
-            UpdateLocalStorage(ignored);
+    XenForo.ajax(url, {'r':1}, function(ajaxData, textStatus) {
+        if (XenForo.hasResponseError(ajaxData))
+        {
+            return false;
         }
-    };
-
-    xmlhttp.open("GET", url, true);
-    xmlhttp.send();
+        UpdateLocalStorage(ajaxData);
+    });
 
     function UpdateLocalStorage(ignored) {
         // TODO: Find actual format of JSON response
@@ -529,4 +532,5 @@ function storageAvailable(type) {
     }
 }
 
-}) ();
+}
+(jQuery, this, document);
