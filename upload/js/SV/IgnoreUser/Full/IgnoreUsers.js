@@ -32,7 +32,7 @@ var SV = SV || {};
 /** @param {jQuery} $ jQuery Object */
 !function($, window, document, _undefined)
 {
-  'use strict';
+    'use strict';
 
     if (!supportsLocalStorageAndCustomProperties())
         return;
@@ -51,7 +51,7 @@ function StorageChanged(e) {
         CreateCSS();
     }
     else if (e.key === "ignoredExpiration") {
-        // abort update attempts from this page
+        // TODO: abort update attempts from this page
     }
 }
 
@@ -84,7 +84,7 @@ function UpdateIgnores(){
 function RequestUpdatedIgnores() {
     console.log("RequestUpdatedIgnores");
 
-    var url = "https://forums.sufficientvelocity.com/account/ignored.json";
+    let url = "https://forums.sufficientvelocity.com/account/ignored.json";
     XenForo.ajax(url, {'r':1}, function(ajaxData, textStatus) {
         if (XenForo.hasResponseError(ajaxData))
         {
@@ -210,32 +210,6 @@ function CreateThreadIgnoreCSS() {
     }
 
     return cssText;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function GetIgnoredUsers() {
-    let users = localStorage.getItem("ignoredUsers");
-    if (users) {
-        return users.split(",");
-    }
-    return [];
-}
-
-function GetIgnoredThreadNumbers() {
-    let threads = localStorage.getItem("ignoredThreads");
-    if (threads) {
-        return threads.split(",");
-    }
-    return [];
-}
-
-function GetIgnoredThreadIds() {
-    let threads = GetIgnoredThreadNumbers();
-    for (let i = 0; i < threads.length; i++) {
-        threads[i] = `thread-${threads[i]}`;
-    }
-    return threads;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -385,9 +359,9 @@ function IsForumView() {
 }
 
 function IsThreadIgnored() {
-    let id = GetThisThreadId();
+    let num = GetThisThreadNumber();
     let threads = GetIgnoredThreadNumbers();
-    let index = threads.indexOf(id);
+    let index = threads.indexOf(num);
 
     return (index >= 0);
 }
@@ -431,8 +405,8 @@ function PageHasIgnoredThreads() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function ToggleThreadIgnore() {
-    let id = GetThisThreadId();
-    if (id) {
+    let num = GetThisThreadNumber();
+    if (num) {
         let threads = GetIgnoredThreadNumbers();
 
         let index = threads.indexOf(id);
@@ -442,7 +416,7 @@ function ToggleThreadIgnore() {
         if (threadIsIgnored) {
             threads.splice(index, 1);
         } else {
-            threads.push(id);
+            threads.push(num);
         }
 
         localStorage.setItem("ignoredThreads", String(threads));
@@ -473,9 +447,32 @@ function UpdateToggleButtons(threadIsIgnored) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+function GetIgnoredUsers() {
+    let users = localStorage.getItem("ignoredUsers");
+    if (users) {
+        return users.split(",");
+    }
+    return [];
+}
 
-function GetThisThreadId() {
-    // Extract the thread ID from the end of the canonical link href
+function GetIgnoredThreadNumbers() {
+    let threads = localStorage.getItem("ignoredThreads");
+    if (threads) {
+        return threads.split(",");
+    }
+    return [];
+}
+
+function GetIgnoredThreadIds() {
+    let threads = GetIgnoredThreadNumbers();
+    for (let i = 0; i < threads.length; i++) {
+        threads[i] = `thread-${threads[i]}`;
+    }
+    return threads;
+}
+
+function GetThisThreadNumber() {
+    // Extract the thread ID number from the end of the canonical link href
     let idRegex = /\/threads\/[^\/]+\.(\d+)\//;
 
     let docLinks = document.head.getElementsByTagName("link");
