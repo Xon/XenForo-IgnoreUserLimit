@@ -39,25 +39,25 @@ var SV = SV || {};
 
     var ignoreUrl = `${window.location.protocol}//${window.location.hostname}/account/ignored.json`;
 
-    window.addEventListener('storage', StorageChanged);
+    window.addEventListener('storage', storageChanged);
 
-    UpdateIgnores();
+    updateIgnoredEntities();
 
-    document.addEventListener('DOMContentLoaded', MakeButtonsOnLoad, false);
+    document.addEventListener('DOMContentLoaded', makeButtonsOnLoad, false);
 
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function StorageChanged(e) {
+function storageChanged(e) {
     if (e.key === "ignoredUsers" || e.key === "ignoredThreads") {
-        CreateCSS();
+        createCSS();
     }
     else if (e.key === "ignoredExpiration") {
         // TODO: abort update attempts from this page
     }
 }
 
-function UpdateIgnores(){
+function updateIgnoredEntities(){
     let expirationOffset = 21600000; // 6 hours
     let newExpiration = String(Date.now() + expirationOffset);
 
@@ -69,28 +69,28 @@ function UpdateIgnores(){
         setTimeout(function() {
             let checkExpiration = localStorage.getItem("ignoredExpiration");
             if (checkExpiration == newExpiration) {
-                RequestUpdatedIgnores();
+                requestIgnoreData();
             }
         }, delay);
     } else {
-        CreateCSS();
+        createCSS();
     }
 }
 
-function RequestUpdatedIgnores() {
+function requestIgnoreData() {
     XenForo.ajax(ignoreUrl, {'r':1}, function(ajaxData, textStatus) {
         if (XenForo.hasResponseError(ajaxData))
         {
             return false;
         }
-        UpdateLocalStorage(ajaxData);
+        updateLocalStorage(ajaxData);
     });
 
-    function UpdateLocalStorage(ignored) {
+    function updateLocalStorage(ignored) {
         if (ignored && ignored.ignoredUsers) {
             localStorage.setItem("ignoredUsers", String(ignored.ignoredUsers));
         }
-        CreateCSS();
+        createCSS();
     }
 }
 
@@ -99,26 +99,26 @@ function RequestUpdatedIgnores() {
 var threadIgnoreCSS;
 var userIgnoreCSS;
 
-function CreateCSS() {
-    RemoveCSS(userIgnoreCSS);
-    userIgnoreCSS = CreateUserIgnoreCSS();
-    ApplyCSS(userIgnoreCSS);
+function createCSS() {
+    removeCSS(userIgnoreCSS);
+    userIgnoreCSS = createCssToIgnoreUsers();
+    applyCSS(userIgnoreCSS);
 
-    RemoveCSS(threadIgnoreCSS);
-    threadIgnoreCSS = CreateThreadIgnoreCSS();
-    ApplyCSS(threadIgnoreCSS);
+    removeCSS(threadIgnoreCSS);
+    threadIgnoreCSS = createCssToIgnoreThreads();
+    applyCSS(threadIgnoreCSS);
 
-    MakeButtons(false);
+    makeButtons(false);
 }
 
-function ApplyCSS(css) {
+function applyCSS(css) {
     let element = document.createElement("style");
     element.type = "text/css";
     element.innerHTML = css;
     document.head.appendChild(element);
 }
 
-function RemoveCSS(css) {
+function removeCSS(css) {
     if (css) {
         let styleTags = document.head.getElementsByTagName("style");
 
@@ -131,8 +131,8 @@ function RemoveCSS(css) {
     }
 }
 
-function CreateUserIgnoreCSS() {
-    let users = GetIgnoredUsers();
+function createCssToIgnoreUsers() {
+    let users = getIgnoredUsers();
     let cssText = "";
 
     // Create CSS for ignored user names.
@@ -171,8 +171,8 @@ ${quoteBlock}
     return cssText;
 }
 
-function CreateThreadIgnoreCSS() {
-    let threads = GetIgnoredThreadIds();
+function createCssToIgnoreThreads() {
+    let threads = getIgnoredThreadIds();
     let cssText = "";
 
     // Create CSS for ignored threads.
@@ -207,18 +207,18 @@ function CreateThreadIgnoreCSS() {
 
 function detach() {
     try {
-        document.removeEventListener('DOMContentLoaded', MakeButtonsOnLoad, false);
+        document.removeEventListener('DOMContentLoaded', makeButtonsOnLoad, false);
     } catch (e) {
         // Ignore.  Possibly window closing.
     }
 }
 
-function MakeButtonsOnLoad() {
+function makeButtonsOnLoad() {
     detach();
-    MakeButtons(true);
+    makeButtons(true);
 }
 
-function MakeButtons(onLoad) {
+function makeButtons(onLoad) {
     // If we got here before the page finished loading, skip and wait for
     // the event listener.
     if (!onLoad) {
@@ -227,36 +227,36 @@ function MakeButtons(onLoad) {
         }
     }
 
-    MakeShowIgnoredButtons();
-    MakeHideThreadButtons();
+    makeButtonsToShowIgnoredInfo();
+    makeButtonsToHideThread();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function MakeShowIgnoredButtons() {
+function makeButtonsToShowIgnoredInfo() {
     let showContentFn;
     let whatToShow;
     let visible;
 
-    if (IsThreadView()) {
+    if (isThreadView()) {
         showContentFn = function() {
-            ToggleIgnoredEntries(document.getElementById('messageList'));
+            toggleIgnoredEntries(document.getElementById('messageList'));
         };
         whatToShow = "Users";
-        visible = PageHasIgnoredPosts();
-    } else if (IsForumView()) {
+        visible = pageHasIgnoredPosts();
+    } else if (isForumView()) {
         showContentFn = function() {
-            ToggleIgnoredEntries(document.getElementsByClassName('discussionListItems')[0]);
+            toggleIgnoredEntries(document.getElementsByClassName('discussionListItems')[0]);
         };
         whatToShow = "Threads";
-        visible = PageHasIgnoredThreads();
+        visible = pageHasIgnoredThreads();
     } else {
         return;
     }
 
     let buttonClass = visible ? "button" : "hidden button";
 
-    let showingButtons = GetIgnoreButtons("showing");
+    let showingButtons = findIgnoreButtons("showing");
 
     if (showingButtons.length > 0) {
         for (let i = 0; i < showingButtons.length; i++) {
@@ -278,17 +278,17 @@ function MakeShowIgnoredButtons() {
     }
 }
 
-function MakeHideThreadButtons() {
-    if (!IsThreadView()) {
+function makeButtonsToHideThread() {
+    if (!isThreadView()) {
         return;
     }
 
-    let isIgnored = IsThreadIgnored();
-    let ignoringButtons = GetIgnoreButtons("ignoring");
+    let isIgnored = isThreadIgnored();
+    let ignoringButtons = findIgnoreButtons("ignoring");
 
     if (ignoringButtons.length > 0) {
         for (let i = 0; i < ignoringButtons.length; i++) {
-            ignoringButtons[i].innerHTML = IgnoreThreadButtonText(isIgnored);
+            ignoringButtons[i].innerHTML = getIgnoreThreadButtonText(isIgnored);
         }
 
         return;
@@ -299,8 +299,8 @@ function MakeHideThreadButtons() {
     for (let nav of navGroups) {
         let button = document.createElement('button');
         button.className = "button";
-        button.addEventListener('click', ToggleThreadIgnore);
-        button.innerHTML = IgnoreThreadButtonText(isIgnored);
+        button.addEventListener('click', toggleThreadIgnore);
+        button.innerHTML = getIgnoreThreadButtonText(isIgnored);
         button.setAttribute("data-ignore", "ignoring");
         nav.appendChild(button);
     }
@@ -308,7 +308,7 @@ function MakeHideThreadButtons() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function GetIgnoreButtons(dataVal) {
+function findIgnoreButtons(dataVal) {
     let buttons = [];
     let navGroups = document.getElementsByClassName('pageNavLinkGroup');
 
@@ -324,11 +324,11 @@ function GetIgnoreButtons(dataVal) {
     return buttons;
 }
 
-function ToggleIgnoredEntries(parentElement) {
+function toggleIgnoredEntries(parentElement) {
     if (parentElement) {
         parentElement.classList.toggle('showIgnored');
 
-        let buttons = GetIgnoreButtons("showing");
+        let buttons = findIgnoreButtons("showing");
 
         for (let i = 0; i < buttons.length; i++) {
             let cmd = buttons[i].innerHTML.slice(0,4) === 'Show' ? 'Hide' : 'Show';
@@ -339,10 +339,10 @@ function ToggleIgnoredEntries(parentElement) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function ToggleThreadIgnore() {
-    let num = GetThisThreadNumber();
+function toggleThreadIgnore() {
+    let num = getThisThreadNumber();
     if (num) {
-        let threads = GetIgnoredThreadNumbers();
+        let threads = getIgnoredThreadNumbers();
 
         let index = threads.indexOf(id);
         let threadIsIgnored = index >= 0;
@@ -355,25 +355,25 @@ function ToggleThreadIgnore() {
         }
 
         localStorage.setItem("ignoredThreads", String(threads));
-        UpdateToggleButtons(!threadIsIgnored);
+        updateToggleButtons(!threadIsIgnored);
     }
 }
 
 
-function IgnoreThreadButtonText(threadIsIgnored) {
+function getIgnoreThreadButtonText(threadIsIgnored) {
     if (threadIsIgnored === true) {
         return "Unignore Thread";
     } else if (threadIsIgnored === false) {
         return "Ignore Thread";
     } else {
-        return IgnoreThreadButtonText(IsThreadIgnored());
+        return getIgnoreThreadButtonText(isThreadIgnored());
     }
 }
 
-function UpdateToggleButtons(threadIsIgnored) {
-    let text = IgnoreThreadButtonText(threadIsIgnored);
+function updateToggleButtons(threadIsIgnored) {
+    let text = getIgnoreThreadButtonText(threadIsIgnored);
 
-    let ignoringButtons = GetIgnoreButtons("ignoring");
+    let ignoringButtons = findIgnoreButtons("ignoring");
 
     for (let btn of ignoringButtons) {
         btn.innerHTML = text;
@@ -382,25 +382,25 @@ function UpdateToggleButtons(threadIsIgnored) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function IsThreadView() {
+function isThreadView() {
     let content = document.getElementById('content');
     return (content.className == "thread_view");
 }
 
-function IsForumView() {
+function isForumView() {
     let content = document.getElementById('content');
     return (content.className == "forum_view");
 }
 
-function IsThreadIgnored() {
-    let num = GetThisThreadNumber();
-    let threads = GetIgnoredThreadNumbers();
+function isThreadIgnored() {
+    let num = getThisThreadNumber();
+    let threads = getIgnoredThreadNumbers();
     let index = threads.indexOf(num);
 
     return (index >= 0);
 }
 
-function PageHasIgnoredPosts() {
+function pageHasIgnoredPosts() {
     let messageList = document.getElementById('messageList');
     if (messageList) {
         let posts = messageList.children;
@@ -423,7 +423,7 @@ function PageHasIgnoredPosts() {
     return false;
 }
 
-function PageHasIgnoredThreads() {
+function pageHasIgnoredThreads() {
     let threads = document.getElementsByClassName('discussionListItem')
 
     for (let i = 0; i < threads.length; i++) {
@@ -438,7 +438,7 @@ function PageHasIgnoredThreads() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function GetIgnoredUsers() {
+function getIgnoredUsers() {
     let users = localStorage.getItem("ignoredUsers");
     if (users) {
         return users.split(",");
@@ -446,7 +446,7 @@ function GetIgnoredUsers() {
     return [];
 }
 
-function GetIgnoredThreadNumbers() {
+function getIgnoredThreadNumbers() {
     let threads = localStorage.getItem("ignoredThreads");
     if (threads) {
         return threads.split(",");
@@ -454,15 +454,15 @@ function GetIgnoredThreadNumbers() {
     return [];
 }
 
-function GetIgnoredThreadIds() {
-    let threads = GetIgnoredThreadNumbers();
+function getIgnoredThreadIds() {
+    let threads = getIgnoredThreadNumbers();
     for (let i = 0; i < threads.length; i++) {
         threads[i] = `thread-${threads[i]}`;
     }
     return threads;
 }
 
-function GetThisThreadNumber() {
+function getThisThreadNumber() {
     // Extract the thread ID number from the end of the canonical link href
     let idRegex = /\/threads\/[^\/]+\.(\d+)\//;
 
