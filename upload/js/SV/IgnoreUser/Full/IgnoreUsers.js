@@ -56,12 +56,6 @@ function StorageChanged(e) {
 }
 
 function UpdateIgnores(){
-    let skipUpdate = true;
-    if (skipUpdate) {
-        CreateCSS();
-        return;
-    }
-
     let expirationOffset = 21600000; // 6 hours
     let newExpiration = String(Date.now() + expirationOffset);
 
@@ -69,7 +63,7 @@ function UpdateIgnores(){
 
     if (!expiration || Date.now() > expiration) {
         localStorage.setItem("ignoredExpiration", newExpiration);
-        let delay = Math.random() * 1500 + 200;
+        let delay = Math.random() * 300 + 200;
         setTimeout(function() {
             let checkExpiration = localStorage.getItem("ignoredExpiration");
             if (checkExpiration == newExpiration) {
@@ -82,8 +76,6 @@ function UpdateIgnores(){
 }
 
 function RequestUpdatedIgnores() {
-    console.log("RequestUpdatedIgnores");
-
     let url = "https://forums.sufficientvelocity.com/account/ignored.json";
     XenForo.ajax(url, {'r':1}, function(ajaxData, textStatus) {
         if (XenForo.hasResponseError(ajaxData))
@@ -94,7 +86,6 @@ function RequestUpdatedIgnores() {
     });
 
     function UpdateLocalStorage(ignored) {
-        // TODO: Find actual format of JSON response
         if (ignored && ignored.ignoredUsers) {
             localStorage.setItem("ignoredUsers", String(ignored.ignoredUsers));
         }
@@ -168,7 +159,6 @@ function CreateUserIgnoreCSS() {
         --ignored-user-quote-message: "You are ignoring this user.";
         --ignored-user-quote-message-display: block;
     }`;
-
 
         /* Put everything inside a check for custom property support */
         cssText = `@supports (--css: variables) {
@@ -348,6 +338,49 @@ function ToggleIgnoredEntries(parentElement) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+function ToggleThreadIgnore() {
+    let num = GetThisThreadNumber();
+    if (num) {
+        let threads = GetIgnoredThreadNumbers();
+
+        let index = threads.indexOf(id);
+        let threadIsIgnored = index >= 0;
+
+        // If it doesn't exist, add it; otherwise, remove it.
+        if (threadIsIgnored) {
+            threads.splice(index, 1);
+        } else {
+            threads.push(num);
+        }
+
+        localStorage.setItem("ignoredThreads", String(threads));
+        UpdateToggleButtons(!threadIsIgnored);
+    }
+}
+
+
+function IgnoreThreadButtonText(threadIsIgnored) {
+    if (threadIsIgnored === true) {
+        return "Unignore Thread";
+    } else if (threadIsIgnored === false) {
+        return "Ignore Thread";
+    } else {
+        return IgnoreThreadButtonText(IsThreadIgnored());
+    }
+}
+
+function UpdateToggleButtons(threadIsIgnored) {
+    let text = IgnoreThreadButtonText(threadIsIgnored);
+
+    let ignoringButtons = GetIgnoreButtons("ignoring");
+
+    for (let btn of ignoringButtons) {
+        btn.innerHTML = text;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 function IsThreadView() {
     let content = document.getElementById('content');
     return (content.className == "thread_view");
@@ -400,49 +433,6 @@ function PageHasIgnoredThreads() {
     }
 
     return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function ToggleThreadIgnore() {
-    let num = GetThisThreadNumber();
-    if (num) {
-        let threads = GetIgnoredThreadNumbers();
-
-        let index = threads.indexOf(id);
-        let threadIsIgnored = index >= 0;
-
-        // If it doesn't exist, add it; otherwise, remove it.
-        if (threadIsIgnored) {
-            threads.splice(index, 1);
-        } else {
-            threads.push(num);
-        }
-
-        localStorage.setItem("ignoredThreads", String(threads));
-        UpdateToggleButtons(!threadIsIgnored);
-    }
-}
-
-
-function IgnoreThreadButtonText(threadIsIgnored) {
-    if (threadIsIgnored === true) {
-        return "Unignore Thread";
-    } else if (threadIsIgnored === false) {
-        return "Ignore Thread";
-    } else {
-        return IgnoreThreadButtonText(IsThreadIgnored());
-    }
-}
-
-function UpdateToggleButtons(threadIsIgnored) {
-    let text = IgnoreThreadButtonText(threadIsIgnored);
-
-    let ignoringButtons = GetIgnoreButtons("ignoring");
-
-    for (let btn of ignoringButtons) {
-        btn.innerHTML = text;
-    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
