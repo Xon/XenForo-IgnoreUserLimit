@@ -37,6 +37,8 @@ var SV = SV || {};
     if (!supportsLocalStorageAndCustomProperties())
         return;
 
+    var ignoreUrl = `${window.location.protocol}//${window.location.hostname}/account/ignored.json`;
+
     window.addEventListener('storage', StorageChanged);
 
     UpdateIgnores();
@@ -76,8 +78,7 @@ function UpdateIgnores(){
 }
 
 function RequestUpdatedIgnores() {
-    let url = "https://forums.sufficientvelocity.com/account/ignored.json";
-    XenForo.ajax(url, {'r':1}, function(ajaxData, textStatus) {
+    XenForo.ajax(ignoreUrl, {'r':1}, function(ajaxData, textStatus) {
         if (XenForo.hasResponseError(ajaxData))
         {
             return false;
