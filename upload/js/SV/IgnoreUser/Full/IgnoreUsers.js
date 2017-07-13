@@ -234,33 +234,24 @@ function makeButtons(onLoad) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function makeButtonsToShowIgnoredInfo() {
-    let showContentFn;
-    let whatToShow;
     let visible;
 
     if (isThreadView()) {
-        showContentFn = function() {
-            toggleIgnoredEntries(document.getElementById('messageList'));
-        };
-        whatToShow = "Users";
         visible = pageHasIgnoredPosts();
     } else if (isForumView()) {
-        showContentFn = function() {
-            toggleIgnoredEntries(document.getElementsByClassName('discussionListItems')[0]);
-        };
-        whatToShow = "Threads";
         visible = pageHasIgnoredThreads();
     } else {
         return;
     }
 
-    let buttonClass = visible ? "button" : "hidden button";
-
     let showingButtons = findIgnoreButtons("showing");
 
     if (showingButtons.length > 0) {
         for (let i = 0; i < showingButtons.length; i++) {
-            showingButtons[i].className = buttonClass;
+            if (visible)
+                showingButtons[i].classList.remove("hidden");
+            else
+                showingButtons[i].classList.add("hidden");
         }
 
         return;
@@ -270,9 +261,11 @@ function makeButtonsToShowIgnoredInfo() {
 
     for (let nav of navGroups) {
         let button = document.createElement('button');
-        button.className = buttonClass;
-        button.addEventListener('click', showContentFn);
-        button.innerHTML = 'Show Ignored ' + whatToShow;
+        button.className = "button";
+        if (!visible)
+            button.classList.add("hidden");
+        button.addEventListener('click', toggleShowingIgnoredEntities);
+        button.innerHTML = getShowIgnoredButtonText(true, isThreadView())
         button.setAttribute("data-ignore", "showing");
         nav.appendChild(button);
     }
@@ -299,7 +292,7 @@ function makeButtonsToHideThread() {
     for (let nav of navGroups) {
         let button = document.createElement('button');
         button.className = "button";
-        button.addEventListener('click', toggleThreadIgnore);
+        button.addEventListener('click', toggleIgnoringThread);
         button.innerHTML = getIgnoreThreadButtonText(isIgnored);
         button.setAttribute("data-ignore", "ignoring");
         nav.appendChild(button);
@@ -308,43 +301,21 @@ function makeButtonsToHideThread() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function findIgnoreButtons(dataVal) {
-    let buttons = [];
-    let navGroups = document.getElementsByClassName('pageNavLinkGroup');
+function toggleShowingIgnoredEntities() {
+    let parentElement = getIgnoredParentElement(isThreadView());
 
-    for (let nav of navGroups) {
-        let navButtons = nav.getElementsByTagName("button");
-        for (let i = 0; i < navButtons.length; i++) {
-            if (navButtons[i].getAttribute("data-ignore") === dataVal) {
-                buttons.push(navButtons[i]);
-            }
-        }
-    }
-
-    return buttons;
-}
-
-function toggleIgnoredEntries(parentElement) {
     if (parentElement) {
-        parentElement.classList.toggle('showIgnored');
-
-        let buttons = findIgnoreButtons("showing");
-
-        for (let i = 0; i < buttons.length; i++) {
-            let cmd = buttons[i].innerHTML.slice(0,4) === 'Show' ? 'Hide' : 'Show';
-            buttons[i].innerHTML = `${cmd}${buttons[i].innerHTML.slice(4)}`;
-        }
+        let revealed = parentElement.classList.toggle('showIgnored');
+        setTextOfShowIgnoreButtons(!revealed, isThreadView());
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-function toggleThreadIgnore() {
+function toggleIgnoringThread() {
     let num = getThisThreadNumber();
     if (num) {
         let threads = getIgnoredThreadNumbers();
 
-        let index = threads.indexOf(id);
+        let index = threads.indexOf(num);
         let threadIsIgnored = index >= 0;
 
         // If it doesn't exist, add it; otherwise, remove it.
@@ -355,28 +326,63 @@ function toggleThreadIgnore() {
         }
 
         localStorage.setItem("ignoredThreads", String(threads));
-        updateToggleButtons(!threadIsIgnored);
+        setTextOfIgnoreThreadButtons(!threadIsIgnored);
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////
 
-function getIgnoreThreadButtonText(threadIsIgnored) {
-    if (threadIsIgnored === true) {
-        return "Unignore Thread";
-    } else if (threadIsIgnored === false) {
-        return "Ignore Thread";
-    } else {
-        return getIgnoreThreadButtonText(isThreadIgnored());
+function findIgnoreButtons(dataVal) {
+    let buttons = [];
+    let navGroups = document.getElementsByClassName('pageNavLinkGroup');
+
+    if (navGroups) {
+        for (let nav of navGroups) {
+            let navButtons = nav.getElementsByTagName("button");
+            for (let i = 0; i < navButtons.length; i++) {
+                if (navButtons[i].getAttribute("data-ignore") === dataVal) {
+                    buttons.push(navButtons[i]);
+                }
+            }
+        }
     }
+
+    return buttons;
 }
 
-function updateToggleButtons(threadIsIgnored) {
+function setTextOfIgnoreThreadButtons(threadIsIgnored) {
     let text = getIgnoreThreadButtonText(threadIsIgnored);
 
-    let ignoringButtons = findIgnoreButtons("ignoring");
+    let buttons = findIgnoreButtons("ignoring");
 
-    for (let btn of ignoringButtons) {
+    for (let btn of buttons) {
         btn.innerHTML = text;
+    }
+}
+
+function setTextOfShowIgnoreButtons(isIgnored, ignoreType) {
+    let text = getShowIgnoredButtonText(isIgnored, ignoreType);
+
+    let buttons = findIgnoreButtons("showing");
+
+    for (let btn of buttons) {
+        btn.innerHTML = text;
+    }
+}
+
+function getIgnoreThreadButtonText(isIgnored) {
+    return isIgnored ? "Unignore Thread" : "Ignore Thread";
+}
+
+function getShowIgnoredButtonText(isIgnored, isThreadView) {
+    return `${isIgnored ? "Show" : "Hide"} Ignored ${isThreadView ? "Users" : "Threads"}`;
+}
+
+function getIgnoredParentElement(isThreadView) {
+    if (isThreadView) {
+        return document.getElementById('messageList');
+    } else {
+        return document.getElementsByClassName('discussionListItems')[0];
     }
 }
 
@@ -485,7 +491,7 @@ function getThisThreadNumber() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function supportsLocalStorageAndCustomProperties() {
-    let supportsLocalStorage = storageAvailable('localStorage');
+    let supportsLocalStorage = hasStorageAvailable('localStorage');
     let supportsCustomProperties = window.CSS && CSS.supports('color', 'var(--primary)');
 
     return supportsLocalStorage && supportsCustomProperties;
@@ -493,7 +499,7 @@ function supportsLocalStorageAndCustomProperties() {
 
 /* Function to test whether local storage is available to use.
    Can check for localStorage and sessionStorage. */
-function storageAvailable(type) {
+function hasStorageAvailable(type) {
     try {
         let storage = window[type], x = '__storage_test__';
         // Shortcut test if we've already used local storage.
