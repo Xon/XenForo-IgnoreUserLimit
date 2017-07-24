@@ -227,8 +227,8 @@ function makeButtons(onLoad) {
         }
     }
 
-    makeButtonsToShowIgnoredInfo();
     makeButtonsToHideThread();
+    makeButtonsToShowIgnoredInfo();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
