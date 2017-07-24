@@ -261,7 +261,7 @@ function makeButtonsToShowIgnoredInfo() {
 
     for (let nav of navGroups) {
         let button = document.createElement('button');
-        button.className = "button";
+        button.className = "button ignore-button";
         if (!visible)
             button.classList.add("hidden");
         button.addEventListener('click', toggleShowingIgnoredEntities);
@@ -291,7 +291,7 @@ function makeButtonsToHideThread() {
 
     for (let nav of navGroups) {
         let button = document.createElement('button');
-        button.className = "button";
+        button.className = "button ignore-button";
         button.addEventListener('click', toggleIgnoringThread);
         button.innerHTML = getIgnoreThreadButtonText(isIgnored);
         button.setAttribute("data-ignore", "ignoring");
