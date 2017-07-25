@@ -41,6 +41,12 @@
     .hidden.button {
         display: none;
     }
+    .ignore-button {
+        margin-right: 3px;
+    }
+    .PageNav ~ .ignore-button {
+        margin-top: 3px;
+    }
 
     /* Hide ignored users */
     #messageList > li {
