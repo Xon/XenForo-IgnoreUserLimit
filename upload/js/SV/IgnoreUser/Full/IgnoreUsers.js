@@ -287,15 +287,18 @@ function makeButtonsToHideThread() {
         return;
     }
 
-    let navGroups = document.getElementsByClassName('pageNavLinkGroup');
+    let insertPoint = document.getElementsByClassName('threadmarkMenus');
+    if (!insertPoint || insertPoint.length == 0) {
+        insertPoint = document.getElementsByClassName('pageNavLinkGroup');
+    }
 
-    for (let nav of navGroups) {
+    for (let container of insertPoint) {
         let button = document.createElement('button');
         button.className = "button ignore-button";
         button.addEventListener('click', toggleIgnoringThread);
         button.innerHTML = getIgnoreThreadButtonText(isIgnored);
         button.setAttribute("data-ignore", "ignoring");
-        nav.appendChild(button);
+        container.appendChild(button);
     }
 }
 
@@ -334,16 +337,12 @@ function toggleIgnoringThread() {
 
 function findIgnoreButtons(dataVal) {
     let buttons = [];
-    let navGroups = document.getElementsByClassName('pageNavLinkGroup');
 
-    if (navGroups) {
-        for (let nav of navGroups) {
-            let navButtons = nav.getElementsByTagName("button");
-            for (let i = 0; i < navButtons.length; i++) {
-                if (navButtons[i].getAttribute("data-ignore") === dataVal) {
-                    buttons.push(navButtons[i]);
-                }
-            }
+    let ignoreButtons = document.getElementsByClassName('ignore-button');
+
+    for (let i = 0; i < ignoreButtons.length; i++) {
+        if (ignoreButtons[i].getAttribute("data-ignore") === dataVal) {
+            buttons.push(ignoreButtons[i]);
         }
     }
 
