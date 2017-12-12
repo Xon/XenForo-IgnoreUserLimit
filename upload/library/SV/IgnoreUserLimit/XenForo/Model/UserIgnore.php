@@ -2,13 +2,19 @@
 
 class SV_IgnoreUserLimit_XenForo_Model_UserIgnore extends XFCP_SV_IgnoreUserLimit_XenForo_Model_UserIgnore
 {
+    /**
+     * @param int $userId
+     * @return int
+     */
     public function getIgnoredUserCount($userId)
     {
-        return $this->_getDb()->fetchOne('
+        $count = $this->_getDb()->fetchOne('
             SELECT count(user_id)
             FROM xf_user_ignored
             WHERE user_id = ?
         ', $userId);
+
+        return $count ? $count : 0;
     }
 
     public function ignoreUsers($userId, $ignoredUserIds)
@@ -27,7 +33,7 @@ class SV_IgnoreUserLimit_XenForo_Model_UserIgnore extends XFCP_SV_IgnoreUserLimi
 
         if ($ignoreLimit >= 0)
         {
-            $ignoreCount = $this->getIgnoredUserCount($userId) + count($ignoredUserIds);
+            $ignoreCount = $this->getIgnoredUserCount($userId) + is_array($ignoredUserIds) ? count($ignoredUserIds) : 0;
             if ($ignoreCount > $ignoreLimit)
             {
                 throw new XenForo_Exception(new XenForo_Phrase('sv_you_may_only_ignore_x_people', array('count' => $ignoreLimit)), true);
