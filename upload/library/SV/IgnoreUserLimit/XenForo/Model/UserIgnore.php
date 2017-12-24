@@ -33,7 +33,7 @@ class SV_IgnoreUserLimit_XenForo_Model_UserIgnore extends XFCP_SV_IgnoreUserLimi
 
         if ($ignoreLimit >= 0)
         {
-            $ignoreCount = $this->getIgnoredUserCount($userId) + is_array($ignoredUserIds) ? count($ignoredUserIds) : 0;
+            $ignoreCount = $this->getIgnoredUserCount($userId) + (is_array($ignoredUserIds) ? count($ignoredUserIds) : 1);
             if ($ignoreCount > $ignoreLimit)
             {
                 throw new XenForo_Exception(new XenForo_Phrase('sv_you_may_only_ignore_x_people', array('count' => $ignoreLimit)), true);
