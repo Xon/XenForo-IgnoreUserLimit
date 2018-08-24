@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="SV_IgnoreUserLimit" title="Ignore User Limit" version_string="1.1.1" version_id="1010100" url="https://xenforo.com/community/resources/user-ignore-limit.4382" install_callback_class="SV_IgnoreUserLimit_Installer" install_callback_method="install" uninstall_callback_class="" uninstall_callback_method="">
+<addon addon_id="SV_IgnoreUserLimit" title="Ignore User Limit" version_string="1.1.2" version_id="1010200" url="https://xenforo.com/community/resources/user-ignore-limit.4382" install_callback_class="SV_IgnoreUserLimit_Installer" install_callback_method="install" uninstall_callback_class="" uninstall_callback_method="">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -7,9 +7,11 @@
   <admin_template_modifications/>
   <code_events/>
   <code_event_listeners>
-    <listener event_id="load_class" execute_order="9000" callback_class="SV_IgnoreUserLimit_Listener" callback_method="load_class" active="1" hint="XenForo_Model_UserIgnore" description="XenForo_Model_UserIgnore"/>
-    <listener event_id="load_class" execute_order="9000" callback_class="SV_IgnoreUserLimit_Listener" callback_method="load_class" active="1" hint="XenForo_Model_User" description="XenForo_Model_User"/>
-    <listener event_id="visitor_setup" execute_order="9000" callback_class="SV_IgnoreUserLimit_Listener" callback_method="visitor_setup" active="1" hint="" description=""/>
+    <listener event_id="load_class_controller" execute_order="4382" callback_class="SV_IgnoreUserLimit_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Account" description="XenForo_ControllerPublic_Account"/>
+    <listener event_id="load_class_model" execute_order="4382" callback_class="SV_IgnoreUserLimit_Listener" callback_method="load_class" active="1" hint="XenForo_Model_UserIgnore" description="XenForo_Model_UserIgnore"/>
+    <listener event_id="load_class_model" execute_order="4382" callback_class="SV_IgnoreUserLimit_Listener" callback_method="load_class" active="1" hint="XenForo_Model_User" description="XenForo_Model_User"/>
+    <listener event_id="load_class_view" execute_order="4382" callback_class="SV_IgnoreUserLimit_Listener" callback_method="load_class" active="1" hint="XenForo_ViewPublic_Account_Ignored" description="XenForo_ViewPublic_Account_Ignored"/>
+    <listener event_id="visitor_setup" execute_order="4382" callback_class="SV_IgnoreUserLimit_Listener" callback_method="visitor_setup" active="1" hint="" description=""/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
@@ -18,14 +20,14 @@
   <permissions>
     <permission_groups/>
     <permissions>
-      <permission permission_group_id="general" permission_id="sv_userIgnoreLimit" permission_type="integer" default_value_int="0" interface_group_id="generalPermissions" display_order="11300"/>
       <permission permission_group_id="general" permission_id="sv_userIgnoreDisabled" permission_type="flag" default_value="unset" interface_group_id="generalPermissions" display_order="11300"/>
+      <permission permission_group_id="general" permission_id="sv_userIgnoreLimit" permission_type="integer" default_value_int="0" interface_group_id="generalPermissions" display_order="11300"/>
     </permissions>
     <interface_groups/>
   </permissions>
   <phrases>
-    <phrase title="permission_general_sv_userIgnoreLimit" version_id="10000" version_string="1.0.0"><![CDATA[User Ignore Limit]]></phrase>
     <phrase title="permission_general_sv_userIgnoreDisabled" version_id="10100" version_string="1.1.0"><![CDATA[Disable User Ignore feature]]></phrase>
+    <phrase title="permission_general_sv_userIgnoreLimit" version_id="10000" version_string="1.0.0"><![CDATA[User Ignore Limit]]></phrase>
     <phrase title="sv_you_may_only_ignore_x_people" version_id="10000" version_string="1.0.0"><![CDATA[You may only ignore {count} people.]]></phrase>
   </phrases>
   <route_prefixes/>
