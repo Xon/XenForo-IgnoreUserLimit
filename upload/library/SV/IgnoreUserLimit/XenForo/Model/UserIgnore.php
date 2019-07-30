@@ -27,7 +27,7 @@ class SV_IgnoreUserLimit_XenForo_Model_UserIgnore extends XFCP_SV_IgnoreUserLimi
 
             if ($visitor->hasPermission('general', 'sv_userIgnoreDisabled'))
             {
-                throw new XenForo_Exception(new XenForo_Phrase('sv_you_may_only_ignore_x_people', array('count' => 0)), true);
+                throw new XenForo_Exception(new XenForo_Phrase('sv_you_may_only_ignore_x_people', ['count' => 0]), true);
             }
         }
 
@@ -36,7 +36,7 @@ class SV_IgnoreUserLimit_XenForo_Model_UserIgnore extends XFCP_SV_IgnoreUserLimi
             $ignoreCount = $this->getIgnoredUserCount($userId) + (is_array($ignoredUserIds) ? count($ignoredUserIds) : 1);
             if ($ignoreCount > $ignoreLimit)
             {
-                throw new XenForo_Exception(new XenForo_Phrase('sv_you_may_only_ignore_x_people', array('count' => $ignoreLimit)), true);
+                throw new XenForo_Exception(new XenForo_Phrase('sv_you_may_only_ignore_x_people', ['count' => $ignoreLimit]), true);
             }
         }
 
@@ -52,8 +52,9 @@ class SV_IgnoreUserLimit_XenForo_Model_UserIgnore extends XFCP_SV_IgnoreUserLimi
         {
             if ($setError)
             {
-                $error = new XenForo_Exception(new XenForo_Phrase('sv_you_may_only_ignore_x_people', array('count' => 0)), true);
+                $error = new XenForo_Exception(new XenForo_Phrase('sv_you_may_only_ignore_x_people', ['count' => 0]), true);
             }
+
             return false;
         }
 

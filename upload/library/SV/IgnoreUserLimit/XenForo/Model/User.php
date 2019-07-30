@@ -11,7 +11,7 @@ class SV_IgnoreUserLimit_XenForo_Model_User extends XFCP_SV_IgnoreUserLimit_XenF
                 return false;
             }
         }
-        else 
+        else
         {
             $visitor = XenForo_Visitor::getInstance();
             if ($user['user_id'] == $visitor['user_id'] && $visitor->hasPermission('general', 'sv_userIgnoreDisabled'))
