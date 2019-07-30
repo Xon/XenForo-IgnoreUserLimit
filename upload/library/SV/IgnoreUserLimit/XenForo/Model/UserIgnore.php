@@ -52,7 +52,7 @@ class SV_IgnoreUserLimit_XenForo_Model_UserIgnore extends XFCP_SV_IgnoreUserLimi
         {
             if ($setError)
             {
-                $error = new XenForo_Exception(new XenForo_Phrase('sv_you_may_only_ignore_x_people', ['count' => 0]), true);
+                $error = new XenForo_Phrase('sv_you_may_only_ignore_x_people', ['count' => 0]);
             }
 
             return false;
